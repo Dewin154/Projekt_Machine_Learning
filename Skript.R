@@ -45,20 +45,23 @@ correlation <- cor(data$year, data$price_in_euro, use = "complete.obs")
 
 # Create a scatter plot
 par(mfrow = c(1, 1))
-plot(data$year, data$price_in_euro, 
+plot(data$year, data$log_price_in_euro, 
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
 # Add a trend line
-abline(lm(data$price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
+abline(lm(data$log_price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
 
-#===============================================================================
+S#===============================================================================
 # PRICE in EURO
 # Display the 10 smallest and largest values of 'price_in_euro'
 cat("10 smallest values of price_in_euro:\n")
 print(sort(data$price_in_euro, na.last = NA)[1:10])
 cat("10 largest values of price_in_euro:\n")
 print(sort(data$price_in_euro, decreasing = TRUE, na.last = NA)[1:10])
+
+data <- data[data$price_in_euro <= 60000]
+
 par(mfrow = c(1,2))
 boxplot(data$price_in_euro,main="price_in_euro")
 hist(data$price_in_euro, main="price_in_euro")
@@ -85,7 +88,20 @@ summary(data$fuel_consumption_l_100km)
 par(mfrow = c(1, 2))
 boxplot(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)")
 hist(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)", xlab = "Fuel Consumption (l/100 km)")
+#===============================================================================
+# registration_date
+# should be converted in months
 
+#================================================================================
+# Correlation between 'fuel_type' and 'log_price_in_euro'
+data <- data[data$fuel_type == "Petrol" | data$fuel_type == "Diesel" | data$fuel_type == "Electric", ]
+
+par(mfrow = c(1, 1))
+boxplot(data$log_price_in_euro ~ factor(data$fuel_type, levels = c("Petrol", "Diesel", "Electric")), 
+    main = "Log Price in Euro by Fuel Type",
+    xlab = "Fuel Type", 
+    ylab = "Log Price in Euro", 
+    col = c("lightblue", "lightgreen", "lightcoral"))
 
 # Verteilungen beobachten
 par(mfrow = c(2,5))
