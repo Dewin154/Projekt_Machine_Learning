@@ -1,7 +1,3 @@
-print(data)
-
-#setwd("C:/Users/peter/THD/4_Semester/Machine_Learning")
-#print(dirname(rstudioapi::getActiveDocumentContext()$path))
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 data <- read.csv("data.csv", header=TRUE, sep=",", fill=TRUE, stringsAsFactors = TRUE)
@@ -21,6 +17,35 @@ data$mileage_in_km <- as.numeric(gsub(",", ".", as.character(data$mileage_in_km)
 summary(data,maxsum=100)
 
 # registration_date ignorieren, da es mit year korreliert
+
+#===============================================================================
+# PRICE in EURO
+# Display the 10 smallest and largest values of 'price_in_euro'
+cat("10 smallest values of price_in_euro:\n")
+print(sort(data$price_in_euro, na.last = NA)[1:10])
+cat("10 largest values of price_in_euro:\n")
+print(sort(data$price_in_euro, decreasing = TRUE, na.last = NA)[1:10])
+
+data <- data[!is.na(data$price_in_euro) & data$price_in_euro <= 60000, ]
+
+par(mfrow = c(1,2))
+boxplot(data$price_in_euro,main="price_in_euro")
+hist(data$price_in_euro, main="price_in_euro")
+
+#===============================================================================
+# fuel_type
+# Combine fuel types into specified categories
+data$fuel_type <- as.character(data$fuel_type)
+data$fuel_type <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
+data$fuel_type <- as.factor(data$fuel_type)
+
+# Display the distribution of fuel types
+
+# Correlation between fuel_type and price_in_euro
+boxplot(price_in_euro ~ fuel_type, data = data, 
+    main = "Price in Euro by Fuel Type", 
+    xlab = "Fuel Type", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen", "lightcoral"))
 #===============================================================================
 # YEAR
 par(mfrow = c(1,1))
@@ -52,31 +77,6 @@ plot(data$year, data$log_price_in_euro,
 # Add a trend line
 abline(lm(data$log_price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
 
-S#===============================================================================
-# PRICE in EURO
-# Display the 10 smallest and largest values of 'price_in_euro'
-cat("10 smallest values of price_in_euro:\n")
-print(sort(data$price_in_euro, na.last = NA)[1:10])
-cat("10 largest values of price_in_euro:\n")
-print(sort(data$price_in_euro, decreasing = TRUE, na.last = NA)[1:10])
-
-data <- data[data$price_in_euro <= 60000]
-
-par(mfrow = c(1,2))
-boxplot(data$price_in_euro,main="price_in_euro")
-hist(data$price_in_euro, main="price_in_euro")
-
-# Apply logarithmic transformation to 'price_in_euro' to address left-skewed distribution
-data$log_price_in_euro <- log(data$price_in_euro)
-
-# Visualize the transformed data
-par(mfrow = c(1, 2))
-boxplot(data$log_price_in_euro, main = "log_price_in_euro")
-hist(data$log_price_in_euro, main = "log_price_in_euro")
-
-# TODO
-# durch logarithmieren ist der Preis fast perfekt normalverteilt,
-# hier müssen wir nur noch Ausreißer entfernen
 #===============================================================================
 # Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
 data$fuel_consumption_l_100km <- as.numeric(gsub(",", ".", gsub(" l/100 km", "", data$fuel_consumption_l_100km)))
@@ -93,15 +93,7 @@ hist(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)", xlab =
 # should be converted in months
 
 #================================================================================
-# Correlation between 'fuel_type' and 'log_price_in_euro'
-data <- data[data$fuel_type == "Petrol" | data$fuel_type == "Diesel" | data$fuel_type == "Electric", ]
 
-par(mfrow = c(1, 1))
-boxplot(data$log_price_in_euro ~ factor(data$fuel_type, levels = c("Petrol", "Diesel", "Electric")), 
-    main = "Log Price in Euro by Fuel Type",
-    xlab = "Fuel Type", 
-    ylab = "Log Price in Euro", 
-    col = c("lightblue", "lightgreen", "lightcoral"))
 
 # Verteilungen beobachten
 par(mfrow = c(2,5))
