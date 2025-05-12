@@ -14,7 +14,19 @@ data$power_kw <- as.numeric(gsub(",", ".", as.character(data$power_kw)))
 data$power_ps <- as.numeric(gsub(",", ".", as.character(data$power_ps)))
 data$mileage_in_km <- as.numeric(gsub(",", ".", as.character(data$mileage_in_km)))
 
+# returns extensive summary with more levels
 summary(data,maxsum=100)
+
+# removes all NA lines
+data <- data[!apply(is.na(data), 1, all), ]
+
+
+# removes a column in data with name "X"
+data <- data[, !names(data) %in% "offer_description"]
+data <- data[, !names(data) %in% "Unnamed..0"]
+data <- data[, !names(data) %in% "power_ps"]
+
+
 
 # registration_date ignorieren, da es mit year korreliert
 
@@ -67,6 +79,7 @@ summary(data$year)
 
 # Calculate correlation between 'year' and 'price_in_euro'
 correlation <- cor(data$year, data$price_in_euro, use = "complete.obs")
+correlation_fuel_log_price <- cor(data$fuel_consumption_l_100km, data$log_price_in_euro, use = "complete.obs")
 
 # Create a scatter plot
 par(mfrow = c(1, 1))
@@ -74,12 +87,20 @@ plot(data$year, data$log_price_in_euro,
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
+par(mfrow = c(1, 1))
+plot(data$fuel_consumption_l_100km, data$log_price_in_euro, 
+     main = paste("Correlation between Fuel and Log Price in Euro: ", round(correlation_fuel_log_price, 2)),
+     xlab = "Fuel", ylab = "Log Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
 # Add a trend line
 abline(lm(data$log_price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
 
 #===============================================================================
 # Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
 data$fuel_consumption_l_100km <- as.numeric(gsub(",", ".", gsub(" l/100 km", "", data$fuel_consumption_l_100km)))
+
+# Filter fuel above 25l
+data <- data[data$fuel_consumption_l_100km <= 25, ]
 
 # Display summary of the converted 'fuel_consumption' column
 summary(data$fuel_consumption_l_100km)
