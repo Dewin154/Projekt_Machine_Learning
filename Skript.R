@@ -25,6 +25,8 @@ data <- data[!apply(is.na(data), 1, all), ]
 data <- data[, !names(data) %in% "offer_description"]
 data <- data[, !names(data) %in% "Unnamed..0"]
 data <- data[, !names(data) %in% "power_ps"]
+data <- data[, !names(data) %in% "fuel_consumption_g_km"]
+data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
 
 
 
@@ -48,17 +50,17 @@ hist(data$price_in_euro, main="price_in_euro")
 # fuel_type
 # Combine fuel types into specified categories
 data$fuel_type <- as.character(data$fuel_type)
-data$fuel_type <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
-data$fuel_type <- as.factor(data$fuel_type)
+data$fuel_type_new <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
+data$fuel_type_new <- as.factor(data$fuel_type_new)
 
 # Display the distribution of fuel types
 
 # Correlation between fuel_type and price_in_euro
-boxplot(price_in_euro ~ fuel_type, data = data, 
+boxplot(price_in_euro ~ fuel_type_new, data = data, 
     main = "Price in Euro by Fuel Type", 
     xlab = "Fuel Type", ylab = "Price in Euro", 
     col = c("lightblue", "lightgreen", "lightcoral"))
-#===============================================================================
+S#===============================================================================
 # YEAR
 par(mfrow = c(1,1))
 boxplot(data$year,main="year")
@@ -87,28 +89,6 @@ plot(data$year, data$price_in_euro,
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
-par(mfrow = c(1, 1))
-plot(data$fuel_consumption_l_100km, data$price_in_euro, 
-     main = paste("Correlation between Fuel and Log Price in Euro: ", round(correlation_fuel_price, 2)),
-     xlab = "Fuel", ylab = "Log Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
-
-# Add a trend line
-abline(lm(data$price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
-
-#===============================================================================
-# Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
-data$fuel_consumption_l_100km <- as.numeric(gsub(",", ".", gsub(" l/100 km", "", data$fuel_consumption_l_100km)))
-
-# Filter fuel above 25l
-data <- data[data$fuel_consumption_l_100km <= 25, ]
-
-# Display summary of the converted 'fuel_consumption' column
-summary(data$fuel_consumption_l_100km)
-
-# Visualize the distribution of 'fuel_consumption'
-par(mfrow = c(1, 2))
-boxplot(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)")
-hist(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)", xlab = "Fuel Consumption (l/100 km)")
 #===============================================================================
 # registration_date
 # should be converted in months
