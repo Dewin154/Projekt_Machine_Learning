@@ -79,21 +79,21 @@ summary(data$year)
 
 # Calculate correlation between 'year' and 'price_in_euro'
 correlation <- cor(data$year, data$price_in_euro, use = "complete.obs")
-correlation_fuel_log_price <- cor(data$fuel_consumption_l_100km, data$log_price_in_euro, use = "complete.obs")
+correlation_fuel_price <- cor(data$fuel_consumption_l_100km, data$price_in_euro, use = "complete.obs")
 
 # Create a scatter plot
 par(mfrow = c(1, 1))
-plot(data$year, data$log_price_in_euro, 
+plot(data$year, data$price_in_euro, 
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
 par(mfrow = c(1, 1))
-plot(data$fuel_consumption_l_100km, data$log_price_in_euro, 
-     main = paste("Correlation between Fuel and Log Price in Euro: ", round(correlation_fuel_log_price, 2)),
+plot(data$fuel_consumption_l_100km, data$price_in_euro, 
+     main = paste("Correlation between Fuel and Log Price in Euro: ", round(correlation_fuel_price, 2)),
      xlab = "Fuel", ylab = "Log Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
 # Add a trend line
-abline(lm(data$log_price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
+abline(lm(data$price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
 
 #===============================================================================
 # Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
