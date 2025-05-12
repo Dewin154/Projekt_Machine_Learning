@@ -1,6 +1,3 @@
-
-#setwd("C:/Users/peter/THD/4_Semester/Machine_Learning")
-#print(dirname(rstudioapi::getActiveDocumentContext()$path))
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 data <- read.csv("data.csv", header=TRUE, sep=",", fill=TRUE, stringsAsFactors = TRUE)
@@ -32,6 +29,35 @@ data <- data[, !names(data) %in% "power_ps"]
 
 
 # registration_date ignorieren, da es mit year korreliert
+
+#===============================================================================
+# PRICE in EURO
+# Display the 10 smallest and largest values of 'price_in_euro'
+cat("10 smallest values of price_in_euro:\n")
+print(sort(data$price_in_euro, na.last = NA)[1:10])
+cat("10 largest values of price_in_euro:\n")
+print(sort(data$price_in_euro, decreasing = TRUE, na.last = NA)[1:10])
+
+data <- data[!is.na(data$price_in_euro) & data$price_in_euro <= 60000, ]
+
+par(mfrow = c(1,2))
+boxplot(data$price_in_euro,main="price_in_euro")
+hist(data$price_in_euro, main="price_in_euro")
+
+#===============================================================================
+# fuel_type
+# Combine fuel types into specified categories
+data$fuel_type <- as.character(data$fuel_type)
+data$fuel_type <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
+data$fuel_type <- as.factor(data$fuel_type)
+
+# Display the distribution of fuel types
+
+# Correlation between fuel_type and price_in_euro
+boxplot(price_in_euro ~ fuel_type, data = data, 
+    main = "Price in Euro by Fuel Type", 
+    xlab = "Fuel Type", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen", "lightcoral"))
 #===============================================================================
 # YEAR
 par(mfrow = c(1,1))
@@ -57,7 +83,7 @@ correlation_fuel_log_price <- cor(data$fuel_consumption_l_100km, data$log_price_
 
 # Create a scatter plot
 par(mfrow = c(1, 1))
-plot(data$year, data$price_in_euro, 
+plot(data$year, data$log_price_in_euro, 
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
@@ -67,32 +93,9 @@ plot(data$fuel_consumption_l_100km, data$log_price_in_euro,
      xlab = "Fuel", ylab = "Log Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
 # Add a trend line
-abline(lm(data$price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
+abline(lm(data$log_price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
 
 #===============================================================================
-# PRICE in EURO
-# Display the 10 smallest and largest values of 'price_in_euro'
-cat("10 smallest values of price_in_euro:\n")
-print(sort(data$price_in_euro, na.last = NA)[1:10])
-cat("10 largest values of price_in_euro:\n")
-print(sort(data$price_in_euro, decreasing = TRUE, na.last = NA)[1:10])
-par(mfrow = c(1,2))
-boxplot(data$price_in_euro,main="price_in_euro")
-hist(data$price_in_euro, main="price_in_euro")
-
-# Apply logarithmic transformation to 'price_in_euro' to address left-skewed distribution
-data$log_price_in_euro <- log(data$price_in_euro)
-
-# Visualize the transformed data
-par(mfrow = c(1, 2))
-boxplot(data$log_price_in_euro, main = "log_price_in_euro")
-hist(data$log_price_in_euro, main = "log_price_in_euro")
-
-# TODO
-# durch logarithmieren ist der Preis fast perfekt normalverteilt,
-# hier müssen wir nur noch Ausreißer entfernen
-#===============================================================================
-# FUEL_CONSUMPTION_L_100KM
 # Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
 data$fuel_consumption_l_100km <- as.numeric(gsub(",", ".", gsub(" l/100 km", "", data$fuel_consumption_l_100km)))
 
@@ -106,6 +109,11 @@ summary(data$fuel_consumption_l_100km)
 par(mfrow = c(1, 2))
 boxplot(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)")
 hist(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)", xlab = "Fuel Consumption (l/100 km)")
+#===============================================================================
+# registration_date
+# should be converted in months
+
+#================================================================================
 
 
 # Verteilungen beobachten
