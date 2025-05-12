@@ -60,7 +60,7 @@ boxplot(price_in_euro ~ fuel_type_new, data = data,
     main = "Price in Euro by Fuel Type", 
     xlab = "Fuel Type", ylab = "Price in Euro", 
     col = c("lightblue", "lightgreen", "lightcoral"))
-S#===============================================================================
+#===============================================================================
 # YEAR
 par(mfrow = c(1,1))
 boxplot(data$year,main="year")
@@ -88,8 +88,87 @@ par(mfrow = c(1, 1))
 plot(data$year, data$price_in_euro, 
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+#================================================================================
+# mileage_in_km
+# Display the 10 smallest and largest values of 'mileage_in_km'
+cat("10 smallest values of mileage_in_km:\n")
+print(sort(data$mileage_in_km, na.last = NA)[1:10])
+cat("10 largest values of mileage_in_km:\n")
+print(sort(data$mileage_in_km, decreasing = TRUE, na.last = NA)[1:10])
 
-#===============================================================================
+
+par(mfrow = c(1,2))
+boxplot(data$mileage_in_km,main="mileage_in_km")
+hist(data$mileage_in_km, main="mileage_in_km")
+
+
+# Filter out rows where 'mileage_in_km' is not between 0 and 500000
+data <- data[data$mileage_in_km >= 0 & data$mileage_in_km <= 500000, ]
+par(mfrow = c(1,2))
+boxplot(data$mileage_in_km,main="mileage_in_km")
+hist(data$mileage_in_km, main="mileage_in_km")
+
+
+# Calculate correlation between 'mileage_in_km' and 'price_in_euro'
+correlation_mileage_price <- cor(data$mileage_in_km, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$mileage_in_km, data$price_in_euro, 
+    main = paste("Correlation between Mileage and Price in Euro: ", round(correlation_mileage_price, 2)),
+    xlab = "Mileage in km", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))  
+
+# test Square root transformation
+data$mileage_in_km_sqrt <- sqrt(data$mileage_in_km)
+par(mfrow = c(1, 2))
+boxplot(data$mileage_in_km_sqrt,main="mileage_in_km_sqrt")
+hist(data$mileage_in_km_sqrt, main="mileage_in_km_sqrt")
+# Calculate correlation between 'mileage_in_km_sqrt' and 'price_in_euro'
+correlation_mileage_price_sqrt <- cor(data$mileage_in_km_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$mileage_in_km_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Mileage (sqrt) and Price in Euro: ", round(correlation_mileage_price_sqrt, 2)),
+    xlab = "Mileage (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+summary(data$mileage_in_km)
+
+#================================================================================
+# power_kw
+# Display the 10 smallest and largest values of 'power_kw'
+cat("10 smallest values of power_kw:\n")
+print(sort(data$power_kw, na.last = NA)[1:10])
+cat("10 largest values of power_kw:\n")
+print(sort(data$power_kw, decreasing = TRUE, na.last = NA)[1:10])
+par(mfrow = c(1,2))
+boxplot(data$power_kw,main="power_kw")
+hist(data$power_kw, main="power_kw")
+# Filter out rows where 'power_kw' is not between 30 and 300
+data <- data[data$power_kw >= 30 & data$power_kw <= 300, ]
+par(mfrow = c(1,2))
+boxplot(data$power_kw,main="power_kw")
+hist(data$power_kw, main="power_kw")
+# Calculate correlation between 'power_kw' and 'price_in_euro'
+correlation_power_price <- cor(data$power_kw, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$power_kw, data$price_in_euro, 
+    main = paste("Correlation between Power (kW) and Price in Euro: ", round(correlation_power_price, 2)),
+    xlab = "Power (kW)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+# test Square root transformation
+data$power_kw_sqrt <- sqrt(data$power_kw)
+par(mfrow = c(1, 2))
+boxplot(data$power_kw_sqrt,main="power_kw_sqrt")
+hist(data$power_kw_sqrt, main="power_kw_sqrt")
+# Calculate correlation between 'power_kw_sqrt' and 'price_in_euro'
+correlation_power_price_sqrt <- cor(data$power_kw_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$power_kw_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Power (sqrt) and Price in Euro: ", round(correlation_power_price_sqrt, 2)),
+    xlab = "Power (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+summary(data$power_kw)
+#================================================================================
 # registration_date
 # should be converted in months
 
