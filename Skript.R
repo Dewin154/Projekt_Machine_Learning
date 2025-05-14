@@ -98,6 +98,43 @@ par(mfrow = c(1,2))
 boxplot(data$price_in_euro,main="price_in_euro")
 hist(data$price_in_euro, main="price_in_euro")
 
+#================================================================================
+# Convert registration_date to age in months
+library(lubridate)
+
+# Define the target date (e.g., today's date or a specific date)
+target_date <- as.Date("2023-09-01")
+
+# Convert registration_date to Date format
+data$registration_date <- as.Date(paste0("01/", data$registration_date), format = "%d/%m/%Y")
+
+# Calculate the age in months
+data$age_in_months <- interval(data$registration_date, target_date) %/% months(1)
+
+# Display the first few rows to verify
+head(data$age_in_months)
+
+# diagram of age_in_months
+par(mfrow = c(1,2))
+boxplot(data$age_in_months,main="age_in_months")
+hist(data$age_in_months, main="age_in_months")
+
+# Filter out rows where 'age_in_months' is not between 0 and 240
+data <- data[data$age_in_months >= 0 & data$age_in_months <= 240, ]
+
+# test Square root transformation
+data$age_in_months_sqrt <- sqrt(data$age_in_months)
+par(mfrow = c(1, 2))
+boxplot(data$age_in_months_sqrt,main="age_in_months_sqrt")
+hist(data$age_in_months_sqrt, main="age_in_months_sqrt")
+# Calculate correlation between 'age_in_months_sqrt' and 'price_in_euro'
+correlation_age_months_price <- cor(data$age_in_months_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$age_in_months_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Age (sqrt) and Price in Euro: ", round(correlation_age_months_price, 2)),
+    xlab = "Age (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
 #===============================================================================
 # fuel_type
 # Combine fuel types into specified categories
