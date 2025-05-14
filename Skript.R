@@ -104,7 +104,7 @@ hist(data$price_in_euro, main="price_in_euro")
 data$fuel_type <- as.character(data$fuel_type)
 data$fuel_type_new <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
 data$fuel_type_new <- as.factor(data$fuel_type_new)
-
+summary(data$fuel_type_new)
 # Display the distribution of fuel types
 
 # Correlation between fuel_type and price_in_euro
@@ -126,9 +126,10 @@ par(mfrow = c(1,2))
 boxplot(data$year,main="year")
 hist(data$year, main="year")
 # Filter out rows where 'year' is not between 1995 and 2023
-data <- data[data$year >= 1995 & data$year <= 2023, ]
+data <- data[data$year >= 2003 & data$year <= 2023, ]
 par(mfrow = c(1,2))
 boxplot(data$year,main="year")
+hist(data$year, main="year")
 summary(data$year)
 
 # Calculate correlation between 'year' and 'price_in_euro'
@@ -140,6 +141,14 @@ par(mfrow = c(1, 1))
 plot(data$year, data$price_in_euro, 
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+# calculate age in years
+data$age <- 2023 - data$year
+# test Square root transformation
+data$age_sqrt <- sqrt(data$age)
+par(mfrow = c(1, 2))
+boxplot(data$age_sqrt,main="age_sqrt")
+hist(data$age_sqrt, main="age_sqrt")
 #================================================================================
 # mileage_in_km
 # Display the 10 smallest and largest values of 'mileage_in_km'
