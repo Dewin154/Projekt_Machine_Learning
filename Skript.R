@@ -144,11 +144,19 @@ plot(data$year, data$price_in_euro,
 
 # calculate age in years
 data$age <- 2023 - data$year
-# test Square root transformation
-data$age_sqrt <- sqrt(data$age)
+
+# test log transformation
+data$age_log <- log(data$age + 1) # Adding 1 to avoid log(0)
 par(mfrow = c(1, 2))
-boxplot(data$age_sqrt,main="age_sqrt")
-hist(data$age_sqrt, main="age_sqrt")
+boxplot(data$age_log,main="age_log")
+hist(data$age_log, main="age_log")
+# Calculate correlation between 'age_log' and 'price_in_euro'
+correlation_age_log_price <- cor(data$age_log, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$age_log, data$price_in_euro, 
+    main = paste("Correlation between Age (log) and Price in Euro: ", round(correlation_age_log_price, 2)),
+    xlab = "Age (log)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 #================================================================================
 # mileage_in_km
 # Display the 10 smallest and largest values of 'mileage_in_km'
