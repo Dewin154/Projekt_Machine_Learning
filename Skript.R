@@ -122,7 +122,7 @@ print(sort(data$year, decreasing = TRUE, na.last = NA)[1:10])
 par(mfrow = c(1,2))
 boxplot(data$year,main="year")
 hist(data$year, main="year")
-# Filter out rows where 'year' is not between 1995 and 2023
+# Filter out rows where 'year' is not between 2003 and 2023
 data <- data[data$year >= 2003 & data$year <= 2023, ]
 par(mfrow = c(1,2))
 boxplot(data$year,main="year")
@@ -131,7 +131,7 @@ summary(data$year)
 
 # Calculate correlation between 'year' and 'price_in_euro'
 correlation <- cor(data$year, data$price_in_euro, use = "complete.obs")
-correlation_fuel_price <- cor(data$fuel_consumption_l_100km, data$price_in_euro, use = "complete.obs")
+
 
 # Create a scatter plot
 par(mfrow = c(1, 1))
@@ -154,6 +154,9 @@ par(mfrow = c(1, 1))
 plot(data$age_log, data$price_in_euro, 
     main = paste("Correlation between Age (log) and Price in Euro: ", round(correlation_age_log_price, 2)),
     xlab = "Age (log)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+
+
 #================================================================================
 # mileage_in_km
 # Display the 10 smallest and largest values of 'mileage_in_km'
@@ -198,6 +201,8 @@ plot(data$mileage_in_km_sqrt, data$price_in_euro,
 
 summary(data$mileage_in_km)
 
+
+
 #================================================================================
 # power_kw
 # Display the 10 smallest and largest values of 'power_kw'
@@ -239,7 +244,13 @@ summary(data$power_kw)
 # should be converted in months
 
 #================================================================================
-
+# FUEL TYPE L/100 KM
+# Convert fuel_consumption_l_100km to numeric without "l/100km" and calculate the correlation with price
+data$fuel_consumption_l_100km <- gsub(",", ".", data$fuel_consumption_l_100km)        
+data$fuel_consumption_l_100km <- gsub(" l/100 km", "", data$fuel_consumption_l_100km)     
+data$fuel_consumption_l_100km <- as.numeric(data$fuel_consumption_l_100km)  
+correlation_fuel_price <- cor(data$fuel_consumption_l_100km, data$price_in_euro, use = "complete.obs")
+#================================================================================
 
 # Verteilungen beobachten
 par(mfrow = c(2,5))
