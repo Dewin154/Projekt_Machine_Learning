@@ -75,7 +75,7 @@ boxplot(price_in_euro ~ unfall, data = data,
     
 # removes a column in data with name "X"
 data <- data[, !names(data) %in% "offer_description"]
-Sdata <- data[, !names(data) %in% "Unnamed..0"]
+data <- data[, !names(data) %in% "Unnamed..0"]
 data <- data[, !names(data) %in% "power_ps"]
 data <- data[, !names(data) %in% "fuel_consumption_g_km"]
 data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
