@@ -20,11 +20,65 @@ summary(data,maxsum=100)
 # removes all NA lines
 data <- data[!apply(is.na(data), 1, all), ]
 
+#================================================================================
+# TEST OFFER_DESCRIPTION
+# get if line has "quattro" OR "xDrive" in offer_description for every line
+data$quattro <- grepl("quattro|xDrive|AWD|4WD", data$offer_description, ignore.case = TRUE)
+summary(data$quattro)
 
+# boxplot of the price_in_euro by quattro
+boxplot(price_in_euro ~ quattro, data = data, 
+    main = "Price in Euro by Quattro", 
+    xlab = "Quattro", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))
+
+# get if line has "sport" in offer_description for every line
+data$sport <- grepl("sport|GT|s-line", data$offer_description, ignore.case = TRUE)
+summary(data$sport)
+# boxplot of the price_in_euro by sport
+boxplot(price_in_euro ~ sport, data = data, 
+    main = "Price in Euro by Sport", 
+    xlab = "Sport", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))
+
+# get if line has "klima" in offer_description for every line
+data$klima <- grepl("klima", data$offer_description, ignore.case = TRUE)
+summary(data$klima)
+# boxplot of the price_in_euro by klima
+boxplot(price_in_euro ~ klima, data = data, 
+    main = "Price in Euro by Klima",
+    xlab = "Klima", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))
+# Wenn Klima drinsteht, dann sind die Autos um einiges günstiger
+# Erklärung: wenn Klimaanlage hervorgehoben wird, hat das Auto sonst nicht viel Austattung
+# da Klimaanlagen in höheren Preisklassen standard sind
+
+# get if line has luxury (led, leder, navi, etc.) in offer_description for every line
+data$luxury <- grepl("led|leder|navi|luxus|luxury|premium|highline|exclusive", data$offer_description, ignore.case = TRUE)
+summary(data$luxury)
+# boxplot of the price_in_euro by luxury
+boxplot(price_in_euro ~ luxury, data = data, 
+    main = "Price in Euro by Luxury", 
+    xlab = "Luxury", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))
+    
+# KANN MAN WEGLASSEN WEIL ZU WENIG
+data$unfall <- grepl("unfall|bastler", data$offer_description, ignore.case = TRUE)
+summary(data$unfall)
+# boxplot of the price_in_euro by unfall
+boxplot(price_in_euro ~ unfall, data = data, 
+    main = "Price in Euro by Unfall", 
+    xlab = "Unfall", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))
+#================================================================================
+
+    
 # removes a column in data with name "X"
 data <- data[, !names(data) %in% "offer_description"]
 data <- data[, !names(data) %in% "Unnamed..0"]
 data <- data[, !names(data) %in% "power_ps"]
+data <- data[, !names(data) %in% "fuel_consumption_g_km"]
+data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
 
 
 
@@ -44,17 +98,54 @@ par(mfrow = c(1,2))
 boxplot(data$price_in_euro,main="price_in_euro")
 hist(data$price_in_euro, main="price_in_euro")
 
+#================================================================================
+# Convert registration_date to age in months
+library(lubridate)
+
+# Define the target date (e.g., today's date or a specific date)
+target_date <- as.Date("2023-09-01")
+
+# Convert registration_date to Date format
+data$registration_date <- as.Date(paste0("01/", data$registration_date), format = "%d/%m/%Y")
+
+# Calculate the age in months
+data$age_in_months <- interval(data$registration_date, target_date) %/% months(1)
+
+# Display the first few rows to verify
+head(data$age_in_months)
+
+# diagram of age_in_months
+par(mfrow = c(1,2))
+boxplot(data$age_in_months,main="age_in_months")
+hist(data$age_in_months, main="age_in_months")
+
+# Filter out rows where 'age_in_months' is not between 0 and 240
+data <- data[data$age_in_months >= 0 & data$age_in_months <= 240, ]
+
+# test Square root transformation
+data$age_in_months_sqrt <- sqrt(data$age_in_months)
+par(mfrow = c(1, 2))
+boxplot(data$age_in_months_sqrt,main="age_in_months_sqrt")
+hist(data$age_in_months_sqrt, main="age_in_months_sqrt")
+# Calculate correlation between 'age_in_months_sqrt' and 'price_in_euro'
+correlation_age_months_price <- cor(data$age_in_months_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$age_in_months_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Age (sqrt) and Price in Euro: ", round(correlation_age_months_price, 2)),
+    xlab = "Age (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
 #===============================================================================
 # fuel_type
 # Combine fuel types into specified categories
 data$fuel_type <- as.character(data$fuel_type)
-data$fuel_type <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
-data$fuel_type <- as.factor(data$fuel_type)
-
+data$fuel_type_new <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
+data$fuel_type_new <- as.factor(data$fuel_type_new)
+summary(data$fuel_type_new)
 # Display the distribution of fuel types
 
 # Correlation between fuel_type and price_in_euro
-boxplot(price_in_euro ~ fuel_type, data = data, 
+boxplot(price_in_euro ~ fuel_type_new, data = data, 
     main = "Price in Euro by Fuel Type", 
     xlab = "Fuel Type", ylab = "Price in Euro", 
     col = c("lightblue", "lightgreen", "lightcoral"))
@@ -72,9 +163,10 @@ par(mfrow = c(1,2))
 boxplot(data$year,main="year")
 hist(data$year, main="year")
 # Filter out rows where 'year' is not between 1995 and 2023
-data <- data[data$year >= 1995 & data$year <= 2023, ]
+data <- data[data$year >= 2003 & data$year <= 2023, ]
 par(mfrow = c(1,2))
 boxplot(data$year,main="year")
+hist(data$year, main="year")
 summary(data$year)
 
 # Calculate correlation between 'year' and 'price_in_euro'
@@ -87,29 +179,102 @@ plot(data$year, data$price_in_euro,
     main = paste("Correlation between Year and Price in Euro: ", round(correlation, 2)),
     xlab = "Year", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
-par(mfrow = c(1, 1))
-plot(data$fuel_consumption_l_100km, data$price_in_euro, 
-     main = paste("Correlation between Fuel and Log Price in Euro: ", round(correlation_fuel_price, 2)),
-     xlab = "Fuel", ylab = "Log Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+# calculate age in years
+data$age <- 2023 - data$year
 
-# Add a trend line
-abline(lm(data$price_in_euro ~ data$year, data = data), col = "red", lwd = 2)
-
-#===============================================================================
-# Convert 'fuel_consumption' to numeric by extracting the numeric part and converting it
-data$fuel_consumption_l_100km <- as.numeric(gsub(",", ".", gsub(" l/100 km", "", data$fuel_consumption_l_100km)))
-
-# Filter fuel above 25l
-data <- data[data$fuel_consumption_l_100km <= 25, ]
-
-# Display summary of the converted 'fuel_consumption' column
-summary(data$fuel_consumption_l_100km)
-
-# Visualize the distribution of 'fuel_consumption'
+# test log transformation
+data$age_log <- log(data$age + 1) # Adding 1 to avoid log(0)
 par(mfrow = c(1, 2))
-boxplot(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)")
-hist(data$fuel_consumption_l_100km, main = "Fuel Consumption (l/100 km)", xlab = "Fuel Consumption (l/100 km)")
-#===============================================================================
+boxplot(data$age_log,main="age_log")
+hist(data$age_log, main="age_log")
+# Calculate correlation between 'age_log' and 'price_in_euro'
+correlation_age_log_price <- cor(data$age_log, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$age_log, data$price_in_euro, 
+    main = paste("Correlation between Age (log) and Price in Euro: ", round(correlation_age_log_price, 2)),
+    xlab = "Age (log)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+#================================================================================
+# mileage_in_km
+# Display the 10 smallest and largest values of 'mileage_in_km'
+cat("10 smallest values of mileage_in_km:\n")
+print(sort(data$mileage_in_km, na.last = NA)[1:10])
+cat("10 largest values of mileage_in_km:\n")
+print(sort(data$mileage_in_km, decreasing = TRUE, na.last = NA)[1:10])
+
+
+par(mfrow = c(1,2))
+boxplot(data$mileage_in_km,main="mileage_in_km")
+hist(data$mileage_in_km, main="mileage_in_km")
+
+
+# Filter out rows where 'mileage_in_km' is not between 0 and 500000
+data <- data[data$mileage_in_km >= 0 & data$mileage_in_km <= 500000, ]
+par(mfrow = c(1,2))
+boxplot(data$mileage_in_km,main="mileage_in_km")
+hist(data$mileage_in_km, main="mileage_in_km")
+
+
+# Calculate correlation between 'mileage_in_km' and 'price_in_euro'
+correlation_mileage_price <- cor(data$mileage_in_km, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$mileage_in_km, data$price_in_euro, 
+    main = paste("Correlation between Mileage and Price in Euro: ", round(correlation_mileage_price, 2)),
+    xlab = "Mileage in km", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))  
+
+# test Square root transformation
+data$mileage_in_km_sqrt <- sqrt(data$mileage_in_km)
+par(mfrow = c(1, 2))
+boxplot(data$mileage_in_km_sqrt,main="mileage_in_km_sqrt")
+hist(data$mileage_in_km_sqrt, main="mileage_in_km_sqrt")
+# Calculate correlation between 'mileage_in_km_sqrt' and 'price_in_euro'
+correlation_mileage_price_sqrt <- cor(data$mileage_in_km_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$mileage_in_km_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Mileage (sqrt) and Price in Euro: ", round(correlation_mileage_price_sqrt, 2)),
+    xlab = "Mileage (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+summary(data$mileage_in_km)
+
+#================================================================================
+# power_kw
+# Display the 10 smallest and largest values of 'power_kw'
+cat("10 smallest values of power_kw:\n")
+print(sort(data$power_kw, na.last = NA)[1:10])
+cat("10 largest values of power_kw:\n")
+print(sort(data$power_kw, decreasing = TRUE, na.last = NA)[1:10])
+par(mfrow = c(1,2))
+boxplot(data$power_kw,main="power_kw")
+hist(data$power_kw, main="power_kw")
+# Filter out rows where 'power_kw' is not between 30 and 300
+data <- data[data$power_kw >= 30 & data$power_kw <= 300, ]
+par(mfrow = c(1,2))
+boxplot(data$power_kw,main="power_kw")
+hist(data$power_kw, main="power_kw")
+# Calculate correlation between 'power_kw' and 'price_in_euro'
+correlation_power_price <- cor(data$power_kw, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$power_kw, data$price_in_euro, 
+    main = paste("Correlation between Power (kW) and Price in Euro: ", round(correlation_power_price, 2)),
+    xlab = "Power (kW)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+
+# test Square root transformation
+data$power_kw_sqrt <- sqrt(data$power_kw)
+par(mfrow = c(1, 2))
+boxplot(data$power_kw_sqrt,main="power_kw_sqrt")
+hist(data$power_kw_sqrt, main="power_kw_sqrt")
+# Calculate correlation between 'power_kw_sqrt' and 'price_in_euro'
+correlation_power_price_sqrt <- cor(data$power_kw_sqrt, data$price_in_euro, use = "complete.obs")
+# Create a scatter plot
+par(mfrow = c(1, 1))
+plot(data$power_kw_sqrt, data$price_in_euro, 
+    main = paste("Correlation between Power (sqrt) and Price in Euro: ", round(correlation_power_price_sqrt, 2)),
+    xlab = "Power (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
+summary(data$power_kw)
+#================================================================================
 # registration_date
 # should be converted in months
 
