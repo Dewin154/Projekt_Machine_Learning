@@ -21,55 +21,15 @@ summary(data,maxsum=100)
 data <- data[!apply(is.na(data), 1, all), ]
 
 #================================================================================
-# TEST OFFER_DESCRIPTION
-# get if line has "quattro" OR "xDrive" in offer_description for every line
-data$quattro <- grepl("quattro|xDrive|AWD|4WD", data$offer_description, ignore.case = TRUE)
-summary(data$quattro)
+# OFFER_DESCRIPTION Sporty
+data$sporty <- as.integer(grepl("quattro|xDrive|AWD|4WD|sport|GT|s-line", data$offer_description, ignore.case = TRUE))
+summary(data$sporty)
 
-# boxplot of the price_in_euro by quattro
-boxplot(price_in_euro ~ quattro, data = data, 
-    main = "Price in Euro by Quattro", 
-    xlab = "Quattro", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))
-
-# get if line has "sport" in offer_description for every line
-data$sport <- grepl("sport|GT|s-line", data$offer_description, ignore.case = TRUE)
-summary(data$sport)
-# boxplot of the price_in_euro by sport
-boxplot(price_in_euro ~ sport, data = data, 
-    main = "Price in Euro by Sport", 
-    xlab = "Sport", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))
-
-# get if line has "klima" in offer_description for every line
-data$klima <- grepl("klima", data$offer_description, ignore.case = TRUE)
-summary(data$klima)
-# boxplot of the price_in_euro by klima
-boxplot(price_in_euro ~ klima, data = data, 
-    main = "Price in Euro by Klima",
-    xlab = "Klima", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))
-# Wenn Klima drinsteht, dann sind die Autos um einiges günstiger
-# Erklärung: wenn Klimaanlage hervorgehoben wird, hat das Auto sonst nicht viel Austattung
-# da Klimaanlagen in höheren Preisklassen standard sind
-
-# get if line has luxury (led, leder, navi, etc.) in offer_description for every line
-data$luxury <- grepl("led|leder|navi|luxus|luxury|premium|highline|exclusive", data$offer_description, ignore.case = TRUE)
-summary(data$luxury)
-# boxplot of the price_in_euro by luxury
-boxplot(price_in_euro ~ luxury, data = data, 
-    main = "Price in Euro by Luxury", 
-    xlab = "Luxury", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))
-    
-# KANN MAN WEGLASSEN WEIL ZU WENIG
-data$unfall <- grepl("unfall|bastler", data$offer_description, ignore.case = TRUE)
-summary(data$unfall)
-# boxplot of the price_in_euro by unfall
-boxplot(price_in_euro ~ unfall, data = data, 
-    main = "Price in Euro by Unfall", 
-    xlab = "Unfall", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))
+# boxplot of the price_in_euro by sporty
+boxplot(price_in_euro ~ sporty, data = data, 
+    main = "Price in Euro by sporty", 
+    xlab = "sporty", ylab = "Price in Euro", 
+    col = c("lightblue", "lightgreen"))W
 #================================================================================
 
     
