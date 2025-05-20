@@ -22,7 +22,7 @@ data <- data[, !names(data) %in% "fuel_consumption_g_km"]
 data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
 
 # returns extensive summary with more levels
-summary(data,maxsum=100)
+summary(data$color,maxsum=100)
 
 # removes all NA lines
 data <- data[!apply(is.na(data), 1, all), ]
@@ -36,13 +36,28 @@ summary(data$sporty)
 boxplot(price_in_euro ~ sporty, data = data, 
     main = "Price in Euro by sporty", 
     xlab = "sporty", ylab = "Price in Euro", 
-    col = c("lightblue", "lightgreen"))W
+    col = c("lightblue", "lightgreen"))
 #================================================================================
+# COLOR
+
+install.packages("dplyr")
+
+# Create order based on median, do not execute if you don't want ordered boxplots!
+library(dplyr)
+
+data <- data %>%
+  group_by(color) %>%
+  mutate(median_price = median(price_in_euro, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(color = factor(color, levels = names(sort(tapply(price_in_euro, color, median, na.rm = TRUE)))))
+
+# plot the boxplots for comparsion
+boxplot(price_in_euro ~ color, data = data,
+        main = "Price in Euro by color",
+        xlab = "Color", ylab = "Price in Euro",
+        las = 2, col = "lightblue")
 
     
-
-
-
 
 # registration_date ignorieren, da es mit year korreliert
 
@@ -273,3 +288,4 @@ boxplot(data[,12],main=names(data)[12])
 boxplot(data[,13],main=names(data)[13])
 boxplot(data[,14],main=names(data)[14])
 boxplot(data[,15],main=names(data)[15])
+
