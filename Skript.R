@@ -14,6 +14,13 @@ data$power_kw <- as.numeric(gsub(",", ".", as.character(data$power_kw)))
 data$power_ps <- as.numeric(gsub(",", ".", as.character(data$power_ps)))
 data$mileage_in_km <- as.numeric(gsub(",", ".", as.character(data$mileage_in_km)))
 
+# removes a column in data with name "X"
+data <- data[, !names(data) %in% "offer_description"]
+data <- data[, !names(data) %in% "Unnamed..0"]
+data <- data[, !names(data) %in% "power_ps"]
+data <- data[, !names(data) %in% "fuel_consumption_g_km"]
+data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
+
 # returns extensive summary with more levels
 summary(data,maxsum=100)
 
@@ -33,12 +40,7 @@ boxplot(price_in_euro ~ sporty, data = data,
 #================================================================================
 
     
-# removes a column in data with name "X"
-data <- data[, !names(data) %in% "offer_description"]
-data <- data[, !names(data) %in% "Unnamed..0"]
-data <- data[, !names(data) %in% "power_ps"]
-data <- data[, !names(data) %in% "fuel_consumption_g_km"]
-data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
+
 
 
 
@@ -245,11 +247,13 @@ summary(data$power_kw)
 
 #================================================================================
 # FUEL TYPE L/100 KM
+
 # Convert fuel_consumption_l_100km to numeric without "l/100km" and calculate the correlation with price
 data$fuel_consumption_l_100km <- gsub(",", ".", data$fuel_consumption_l_100km)        
 data$fuel_consumption_l_100km <- gsub(" l/100 km", "", data$fuel_consumption_l_100km)     
 data$fuel_consumption_l_100km <- as.numeric(data$fuel_consumption_l_100km)  
 correlation_fuel_price <- cor(data$fuel_consumption_l_100km, data$price_in_euro, use = "complete.obs")
+
 #================================================================================
 
 # Verteilungen beobachten
