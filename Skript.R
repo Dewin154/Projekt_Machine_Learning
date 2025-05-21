@@ -113,7 +113,7 @@ plot(data$age_in_months_sqrt, data$price_in_euro,
     xlab = "Age (sqrt)", ylab = "Price in Euro", pch = 16, col = rgb(0, 0, 1, 0.5))
 
 #===============================================================================
-# fuel_type
+# FUEL_TYPE
 # Combine fuel types into specified categories
 data$fuel_type <- as.character(data$fuel_type)
 data$fuel_type_new <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
@@ -175,7 +175,7 @@ plot(data$age_log, data$price_in_euro,
 
 
 #================================================================================
-# mileage_in_km
+# MILEAGE_IN_KM
 # Display the 10 smallest and largest values of 'mileage_in_km'
 cat("10 smallest values of mileage_in_km:\n")
 print(sort(data$mileage_in_km, na.last = NA)[1:10])
@@ -221,7 +221,7 @@ summary(data$mileage_in_km)
 
 
 #================================================================================
-# power_kw
+# POWER_KW
 # Display the 10 smallest and largest values of 'power_kw'
 cat("10 smallest values of power_kw:\n")
 print(sort(data$power_kw, na.last = NA)[1:10])

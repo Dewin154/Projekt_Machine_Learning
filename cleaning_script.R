@@ -10,6 +10,8 @@ data$power_kw <- as.numeric(gsub(",", ".", as.character(data$power_kw)))
 data$power_ps <- as.numeric(gsub(",", ".", as.character(data$power_ps)))
 data$mileage_in_km <- as.numeric(gsub(",", ".", as.character(data$mileage_in_km)))
 
+summary(data)
+
 # remove columns with the name of "X"
 data <- data[, !names(data) %in% "Unnamed..0"]
 data <- data[, !names(data) %in% "power_ps"]
@@ -20,7 +22,6 @@ data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
 # remove all unknown entries in transmission type and drop the "Unknown" category as a level
 data <- data[data$transmission_type != "Unknown", ]
 data$transmission_type <- droplevels(data$transmission_type)
-
 
 
 # adds new column if the car is sport car and convert it to factor
@@ -66,5 +67,9 @@ data <- data[, !names(data) %in% "fuel_type"]
 
 # removes all NA lines after all conversions
 data <- data[!apply(is.na(data), 1, all), ]
+
+# after we anaylized the influence of color on price, we can remove it
+data <- data[, !names(data) %in% "color"]
+data <- data[, !names(data) %in% "median_price"]
 
 summary(data)
