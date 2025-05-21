@@ -72,4 +72,11 @@ data <- data[!apply(is.na(data), 1, all), ]
 data <- data[, !names(data) %in% "color"]
 data <- data[, !names(data) %in% "median_price"]
 
+
+data$brand_type <- ifelse(data$brand %in% c("daewoo", "daihatsu", "lancia", "lada", "fiat", "dacia", "ford", "citroen", "mazda","hyundai", "bmw", "infiniti", "kia", "honda", "audi"), "standard", "premium")
+data$brand_type <- as.factor(data$brand_type)
+
+data <- data[, !names(data) %in% "brand"]
+data <- data[, !names(data) %in% "model"]
+
 summary(data)

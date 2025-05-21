@@ -57,6 +57,33 @@ boxplot(price_in_euro ~ color, data = data,
         xlab = "Color", ylab = "Price in Euro",
         las = 2, col = "lightblue")
 
+
+#===============================================================================
+# BRAND
+
+
+library(dplyr)
+
+data <- data %>%
+  group_by(brand) %>%
+  mutate(median_price = median(price_in_euro, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(brand = factor(brand, levels = names(sort(tapply(price_in_euro, brand, median, na.rm = TRUE)))))
+
+boxplot(price_in_euro ~ brand, data = data,
+        main = "Price in Euro by brand",
+        xlab = "Brand", ylab = "Price in Euro",
+        las = 2, col = "lightblue")
+
+abline(h = 29400, col = "red", lwd = 2, lty = 1)
+abline(h = 21000, col = "red", lwd = 2, lty = 1)
+
+
+
+boxplot(price_in_euro ~ brand_type, data = data,
+        main = "Price in Euro by brand_type",
+        xlab = "Brand_type", ylab = "Price in Euro",
+        las = 2, col = "lightblue")
     
 
 # registration_date ignorieren, da es mit year korreliert
