@@ -14,6 +14,7 @@ summary(data)
 
 # remove columns with the name of "X"
 data <- data[, !names(data) %in% "Unnamed..0"]
+data <- data[, !names(data) %in% "year"]
 data <- data[, !names(data) %in% "power_ps"]
 data <- data[, !names(data) %in% "fuel_consumption_g_km"]
 data <- data[, !names(data) %in% "fuel_consumption_l_100km"]
@@ -33,7 +34,8 @@ data <- data[!is.na(data$price_in_euro) & data$price_in_euro <= 60000, ]
 
 library(lubridate)
 
-# Define the target date (e.g., today's date or a specific date)
+# Define date for filter-limit (1st September 2023 because that is the date
+# of the youngest cars)
 target_date <- as.Date("2023-09-01")
 
 # Convert registration_date to Date format
@@ -51,9 +53,6 @@ data$fuel_type <- as.character(data$fuel_type)
 data$fuel_type_new <- ifelse(data$fuel_type %in% c("Petrol", "Diesel"), data$fuel_type, "Others")
 data$fuel_type_new <- as.factor(data$fuel_type_new)
 
-# Filter out rows where 'year' is not between 2003 and 2023
-data <- data[data$year >= 2003 & data$year <= 2023, ]
-
 # Filter out rows where 'mileage_in_km' is not between 0 and 500000
 data <- data[data$mileage_in_km >= 0 & data$mileage_in_km <= 500000, ]
 
@@ -68,7 +67,7 @@ data <- data[, !names(data) %in% "fuel_type"]
 # removes all NA lines after all conversions
 data <- data[!apply(is.na(data), 1, all), ]
 
-# after we anaylized the influence of color on price, we can remove it
+# after we analyized the influence of color on price, we can remove it
 data <- data[, !names(data) %in% "color"]
 data <- data[, !names(data) %in% "median_price"]
 
