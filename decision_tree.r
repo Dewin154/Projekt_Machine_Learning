@@ -1,47 +1,35 @@
-# filepath: /home/nico/dev/Projekt_Machine_Learning/decision_tree.r
+library(tree)
 
-# Load required libraries
-library(rpart)
-library(rpart.plot)
+summary(data)
 
-# Source the cleaning script to get the cleaned data
-source("cleaning_script.R")
-
-set.seed(42) # For reproducibility
-
-# Set the target variable and predictors
-target <- "price_in_euro"
-predictors <- setdiff(names(data), target)
-
-# Split data: 70% train, 15% val, 15% test
+# Aufteilen der Daten:
+# Anzahl der Daten
+set.seed(123)  # Für Reproduzierbarkeit
 n <- nrow(data)
-idx <- sample(seq_len(n))
-train_idx <- idx[1:round(0.7 * n)]
-val_idx <- idx[(round(0.7 * n) + 1):(round(0.85 * n))]
-test_idx <- idx[(round(0.85 * n) + 1):n]
+train_idx <- sample(seq_len(n), size = 0.7 * n)
+data.train <- data[train_idx, ]
+data.test <- data[-train_idx, ]
 
-train_data <- data[train_idx, ]
-val_data <- data[val_idx, ]
-test_data <- data[test_idx, ]
+# Berechnung des Modells auf den Trainingsdaten:
+# Achtung: im Befehl 'cv.tree' steht bei 'data' nun Daten.train !!!
 
-# Create the formula for the decision tree
-formula <- as.formula(paste(target, "~", paste(predictors, collapse = " + ")))
+tree_model <- tree(price_in_euro ~ power_kw + transmission_type + mileage_in_km + sporty + age_in_months + fuel_type_new + brand_type, data=data.train)
+tuning <- cv.tree(tree_model, K=5)
+t <- which.min(tuning$dev)
+number_of_endpoints <- tuning$size[t]
 
-# Fit the decision tree model on training data
-tree_model <- rpart(formula, data = train_data, method = "anova")
+model <- prune.tree(tree_model,best=number_of_endpoints)
+plot(model)
+text(model)
 
-# Plot the decision tree
-rpart.plot(tree_model, main = "Decision Tree for Car Price Prediction")
 
-# Predict on validation and test sets
-val_pred <- predict(tree_model, val_data)
-test_pred <- predict(tree_model, test_data)
+# Berechnung der Prognoseergebnisse auf den Testdaten:
 
-# Calculate RMSE function
-rmse <- function(actual, predicted) {
-    sqrt(mean((actual - predicted)^2))
-}
+X.test <- data.test[,c("power_kw", "transmission_type", "mileage_in_km", "sporty", "age_in_months", "fuel_type_new", "brand_type")]
+prognosen <- predict(model,X.test)
 
-# Print results
-cat("Validation RMSE:", rmse(val_data[[target]], val_pred), "\n")
-cat("Test RMSE:", rmse(test_data[[target]], test_pred), "\n")
+# Berechnung des mittleren Prognosefehlers (MAE)
+
+y.test <- data.test[,"price_in_euro"]
+mean(abs(y.test-prognosen))
+
