@@ -3,7 +3,7 @@ library(tree)
 summary(data)
 
 # Model calculation on the training data:
-tree_model <- tree(price_in_euro ~ power_kw + transmission_type + mileage_in_km + sporty + age_in_months + fuel_type_new + brand_type, data=data.train)
+tree_model <- tree(price_in_euro ~ power_kw + transmission_type + mileage_in_km + sporty + age_in_months + fuel_type_new + brand_type, data=data.train_and_val)
 tuning <- cv.tree(tree_model, K=5)
 t <- which.min(tuning$dev)
 number_of_endpoints <- tuning$size[t]
