@@ -79,3 +79,30 @@ data <- data[, !names(data) %in% "brand"]
 data <- data[, !names(data) %in% "model"]
 
 summary(data)
+# ===========================================
+# Splitting the data into train, val and test
+# ===========================================
+
+set.seed(123)  # For reproducibility
+n <- nrow(data)
+
+# First, split off 30% for test set (completely independent)
+test_idx <- sample(seq_len(n), size = 0.3 * n)
+data.test <- data[test_idx, ]
+data.rest <- data[-test_idx, ]
+
+# Now split the remaining 70% into train (50%) and val (20%)
+n_rest <- nrow(data.rest)
+train_idx <- sample(seq_len(n_rest), size = round(0.5 * n))  # 50% of original n
+data.train <- data.rest[train_idx, ]
+val_idx <- setdiff(seq_len(n_rest), train_idx)
+data.val <- data.rest[val_idx, ]
+
+# For algorithms that don't need a separate validation set, combine train and val
+data.train_and_val <- rbind(data.train, data.val)
+
+# Summary of splits
+cat("Train set size:", nrow(data.train), "\n")
+cat("Validation set size:", nrow(data.val), "\n")
+cat("Train+Val set size:", nrow(data.train_and_val), "\n")
+cat("Test set size:", nrow(data.test), "\n")

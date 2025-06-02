@@ -2,14 +2,6 @@ library(tree)
 
 summary(data)
 
-# Splitting the data:
-# Number of data points
-set.seed(123)  # For reproducibility
-n <- nrow(data)
-train_idx <- sample(seq_len(n), size = 0.7 * n)
-data.train <- data[train_idx, ]
-data.test <- data[-train_idx, ]
-
 # Model calculation on the training data:
 tree_model <- tree(price_in_euro ~ power_kw + transmission_type + mileage_in_km + sporty + age_in_months + fuel_type_new + brand_type, data=data.train)
 tuning <- cv.tree(tree_model, K=5)
