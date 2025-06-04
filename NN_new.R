@@ -61,3 +61,7 @@ X.test <- X.test[, -1]
 prognosen <- predict(model, as.data.frame(X.test))
 y.test <- data.test[, "price_in_euro"]
 mean(abs(y.test - prognosen))
+
+plot(model)
+
+save(model, file = "neural_network.RData")
