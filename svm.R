@@ -6,6 +6,9 @@ registerDoParallel(cl)
 
 cc <- seq(-1, 2, 1)    # Weniger Werte für cost
 cg <- seq(-2, -1, 0.5) # Weniger Werte für gamma
+#cc <- seq(-1, 3, 0.5)    # More values for C: 0.5 to 8 with smaller steps
+#cg <- seq(-2.5, 0, 0.5)  # Expanded range for gamma: includes higher sigma values
+
 
 ctrl <- trainControl(method = "cv", number = 3, allowParallel = TRUE)
 grid <- expand.grid(
@@ -38,4 +41,4 @@ print(model$bestTune)
 # save the model
 save(model, file = "svm_model.RData")
 # Load the model later with:
-# load("svm_model.RData")
+load("svm_model.RData")

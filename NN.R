@@ -17,7 +17,7 @@ model <- neuralnetwork(
   regression = TRUE,
   loss.type = "absolute",
   learn.rates = 1e-04,
-  n.epochs = 50,
+  n.epochs = 100,
   verbose = FALSE
 )
 plot(model)
