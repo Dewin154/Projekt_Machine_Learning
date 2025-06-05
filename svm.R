@@ -4,10 +4,10 @@ library(doParallel)
 cl <- makeCluster(detectCores() - 2)
 registerDoParallel(cl)
 
-cc <- seq(-1, 2, 1)    # Weniger Werte für cost
-cg <- seq(-2, -1, 0.5) # Weniger Werte für gamma
-#cc <- seq(-1, 3, 0.5)    # More values for C: 0.5 to 8 with smaller steps
-#cg <- seq(-2.5, 0, 0.5)  # Expanded range for gamma: includes higher sigma values
+#cc <- seq(-1, 2, 1)    # Weniger Werte für cost
+#cg <- seq(-2, -1, 0.5) # Weniger Werte für gamma
+cc <- seq(0, 2, 0.5)    # 0, 0.5, 1, 1.5, 2
+cg <- seq(-2, -1, 0.5) # -2, -1.75, -1.5, -1.25, -1, ergibt 5 Werte
 
 
 ctrl <- trainControl(method = "cv", number = 3, allowParallel = TRUE)
@@ -39,6 +39,6 @@ cat("Best tuning parameters:\n")
 print(model$bestTune)
 
 # save the model
-save(model, file = "svm_model.RData")
+save(model, file = "svm_model3.RData")
 # Load the model later with:
-load("svm_model.RData")
+#load("svm_model.RData")
