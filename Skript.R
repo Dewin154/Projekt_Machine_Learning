@@ -316,3 +316,20 @@ boxplot(data[,13],main=names(data)[13])
 boxplot(data[,14],main=names(data)[14])
 boxplot(data[,15],main=names(data)[15])
 
+#================================================================================
+# Check for Mulitcollinearity
+
+library(car)
+
+install.packages("car")
+
+linear_model <- lm(data$price_in_euro ~ data$power_kw + data$transmission_type + data$mileage_in_km + data$sporty + data$age_in_months + data$fuel_type_new + data$brand_type, data = data)
+
+vif_values <- car::vif(linear_model)
+print(vif_values)
+
+# VIF = 1, no multicollinearity
+# VIF 1 to 5, moderate multicollinearity, not a problem but keep the variables in mind
+# VIF 5 to 10, severe multicollinearity, think about steps to reduce multicollinearity
+# VIF > 10, extreme multicollinearity, delete the variable 
+
