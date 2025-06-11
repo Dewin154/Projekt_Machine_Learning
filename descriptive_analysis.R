@@ -33,7 +33,23 @@ barplot(color_counts_sorted,
         col = "steelblue")
 
 data_raw$year <- as.numeric(gsub(",", ".", as.character(data_raw$year)))
+data_raw$price_in_euro <- as.numeric(gsub(",", ".", as.character(data_raw$price_in_euro)))
+data_raw$mileage_in_km <- as.numeric(gsub(",", ".", as.character(data_raw$mileage_in_km)))
 
 mean(data_raw$year, na.rm = TRUE)
+mean(data_raw$price_in_euro, na.rm = TRUE)
 
+boxplot(data_raw$price_in_euro)
+
+plot(data_raw$price_in_euro, data_raw$mileage_in_km,
+     xlab = "Preis in Euro", ylab = "Kilometerstand",
+     main = "Preis und Kilometerstand")
+
+
+summary(data)
+mean(data$price_in_euro, na.rm = TRUE)
+
+plot(data$price_in_euro, data$mileage_in_km,
+     xlab = "Preis in Euro", ylab = "Kilometerstand",
+     main = "Preis und Kilometerstand")
 
