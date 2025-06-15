@@ -10,17 +10,16 @@ X <- model.matrix(
 X <- X[, -1]
 y <- data.train_and_val[, "price_in_euro"]
 
-# caret benötigt alles als Dataframe
 train_data <- as.data.frame(X)
 train_data$price_in_euro <- y
 
-# Definiere Trainingskontrolle für 10-fache Kreuzvalidierung
+# 10-fold Crossvalidation
 ctrl <- trainControl(method = "cv", number = 10)
 
-# Nur die Anzahl der Neuronen im ersten Layer als Parameter
+# Neurons of 1st Hidden layer as parameter
 grid <- expand.grid(hidden1 = c(3, 5, 7))
 
-# Eigene Trainingsfunktion für caret
+# Trainingsfunction forcaret
 caret_ann2 <- list(
   type = "Regression",
   library = "ANN2",
@@ -33,7 +32,7 @@ caret_ann2 <- list(
       regression = TRUE,
       loss.type = "absolute",
       learn.rates = 1e-04,
-      n.epochs = 50,
+      n.epochs = 30,
       verbose = FALSE
     )
   },
@@ -43,7 +42,7 @@ caret_ann2 <- list(
   prob = NULL
 )
 
-# Training mit caret
+# Training with caret
 model <- train(
   price_in_euro ~ .,
   data = train_data,
@@ -54,7 +53,7 @@ model <- train(
 )
 print(model)
 
-# Prognose auf Testdaten
+# Prognose for test data
 X.test <- model.matrix(price_in_euro ~ power_kw + transmission_type + mileage_in_km + sporty + age_in_months + fuel_type_new + brand_type,
                        data.test)
 X.test <- X.test[, -1]
@@ -65,3 +64,4 @@ mean(abs(y.test - prognosen))
 plot(model)
 
 save(model, file = "neural_network.RData")
+
